@@ -1,63 +1,63 @@
 import React, { useState } from 'react';
-import SignUpForm from "./components/SignUpForm";
+import SignUpForm from './components/SignUpForm';
 import SignInForm from './components/SignInForm';
+import Dashboard from './components/Dashboard';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('login');
-  const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
 
-  const handleSignUp = (userData) => {
-    console.log('Sign up successful:', userData); // Debug log
-    setUser(userData);
+  const handleSignUp = (data) => {
+    setUserData(data);
     setCurrentPage('dashboard');
   };
 
-  const handleSignIn = (userData) => {
-    console.log('Sign in successful:', userData); // Debug log
-    setUser(userData);
+  const handleSignIn = (data) => {
+    setUserData(data);
     setCurrentPage('dashboard');
   };
 
-  const handleNavigateToLogin = () => {
-    console.log('Navigating to login'); // Debug log
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('userId');
+    setUserData(null);
     setCurrentPage('login');
   };
-
-  const handleNavigateToSignUp = () => {
-    console.log('Navigating to signup'); // Debug log
-    setCurrentPage('signup');
-  };
-
-  console.log('Current page:', currentPage); // Debug log
 
   return (
     <div>
       {currentPage === 'signup' && (
         <SignUpForm 
           onSignUp={handleSignUp}
-          onNavigateToLogin={handleNavigateToLogin}
+          onNavigateToLogin={() => setCurrentPage('login')}
         />
       )}
       {currentPage === 'login' && (
         <SignInForm 
           onSignIn={handleSignIn}
-          onNavigateToSignUp={handleNavigateToSignUp}
+          onNavigateToSignUp={() => setCurrentPage('signup')}
         />
       )}
       {currentPage === 'dashboard' && (
-        <div className="p-4">
-          <h1 className="text-2xl font-bold">Welcome to Dashboard</h1>
-          <button 
-            onClick={() => {
-              localStorage.removeItem('accessToken');
-              localStorage.removeItem('userId');
-              setUser(null);
-              setCurrentPage('login');
-            }}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Logout
-          </button>
+        <div>
+          <nav className="bg-white shadow-lg">
+            <div className="max-w-6xl mx-auto px-4">
+              <div className="flex justify-between h-16">
+                <div className="flex items-center">
+                  <h1 className="text-xl font-bold text-gray-800">Expense Tracker</h1>
+                </div>
+                <div className="flex items-center">
+                  <button 
+                    onClick={handleLogout}
+                    className="ml-4 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  >
+                    Logout
+                  </button>
+                </div>
+              </div>
+            </div>
+          </nav>
+          <Dashboard userId={userData?.userId || localStorage.getItem('userId')} />
         </div>
       )}
     </div>
